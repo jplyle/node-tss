@@ -1,0 +1,30 @@
+{ "name": "attestation"
+, "publishConfig": { "tag": "alpha" }
+, "description": "nodejs interface to the Trusted Computing Group Software Stack (TSS)"
+, "keywords": ["trusted computing", "TPM", "TSS", "attestation"]
+, "version": "0.0.1"
+, "homepage": "https://github.com/jplyle/node-tss"
+, "author": "John Lyle <john.lyle@cs.ox.ac.uk>"
+, "repository":
+  { "type": "git"
+  , "url": "https://github.com/jplyle/node-tss"
+  }
+, "bugs":
+  { "email": "john.lyle@cs.ox.ac.uk"
+  , "url": ""
+  }
+, "directories": { "lib": "./lib"
+                 , "node_modules": "./node_modules"
+                 }
+, "main": "./lib/webinos.attestation.js"
+, "dependencies":
+  { "schema": "0.2.0"
+  , "dcrypt":
+  }
+, "bundleDependencies":
+  [ "fs"
+  , "path"
+  , "x509"
+  , "tssbridge"
+  ]
+}
