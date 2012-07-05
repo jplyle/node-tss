@@ -17,19 +17,18 @@
 *******************************************************************************/
 
 /*
- * attestation.h
+ * tsscommands.h
  *
  *  Created on: 25 Oct 2011
  *  Author: John Lyle
  *
- *  This header is for the attestation library for webinos, and will be used by a
- *  NodeJS C++ module to access a limited subset of TPM functionality.
- *
+ *  This header file is for the tsscommand.c file.  It provides the
+ *  pure C code connecting to the TSS for accessing the TPM.
  *
  */
 
-#ifndef ATTESTATION_H_
-#define ATTESTATION_H_
+#ifndef TSSCOMMANDS_H_
+#define TSSCOMMANDS_H_
 
 #include <stdio.h>
 #include <string.h>
@@ -43,7 +42,7 @@
 #include <tss/tss_defines.h>
 
 
-
+TSS_RESULT pcrExtend(UINT32 pcrNumber, UINT32 pcrDataLength, BYTE* data);
 TSS_RESULT getTpm(TSS_HCONTEXT context, TSS_HTPM * tpm);
 TSS_RESULT createContext(TSS_HCONTEXT * context);
 TSS_RESULT closeContext(TSS_HCONTEXT context);
@@ -55,7 +54,7 @@ TSS_RESULT createTpmKey(TSS_HKEY key, TSS_HKEY wrapKey, TSS_HPCRS pcrs);
 TSS_RESULT getSrk(TSS_HCONTEXT context, UINT32 secretMode, char* secret, UINT32 secretLen, TSS_HKEY* key);
 TSS_RESULT getKeyFromFile(TSS_HCONTEXT context, TSS_HKEY srk, char* filename, TSS_HKEY* key);
 TSS_RESULT createTpmKey2(TSS_HCONTEXT context, TSS_FLAG keyFlags, TSS_HKEY srk, TSS_HKEY * key );
-UINT32 pcrRead(int pcrNumber, BYTE* pcrRes);
+UINT32 pcrRead(int pcrNumber, BYTE** pcrRes);
 TSS_RESULT quote(char* srkPwd, char* aikfile, long pcrs[], int npcrs,BYTE nonce[], TSS_VALIDATION* valid, TPM_QUOTE_INFO* quoteInfo);
 
 /* The following method has this copyright notice */
@@ -87,4 +86,4 @@ TSS_RESULT createQuote(long pcrs[], int npcrs, BYTE nonce[], TSS_HCONTEXT contex
 
 
 
-#endif /* ATTESTATION_H_ */
+#endif /* TSSCOMMANDS_H_ */

@@ -14,5 +14,6 @@ def build(bld):
   obj.cflags = ["-fPIC"]
   obj.cxxflags = ["-ltspi" "-fPIC"]
   obj.target = "tssbridge"
-  obj.source = ["./src/attestation.c", "./src/tssbridge.cpp"]
+  obj.includes = './includes/cvv8'
+  obj.source = ["./src/tsscommands.c", "./src/tssbridge.cpp"]
   obj.uselib = "TSPI";

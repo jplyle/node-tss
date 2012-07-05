@@ -16,7 +16,7 @@
 , "directories": { "lib": "./lib"
                  , "node_modules": "./node_modules"
                  }
-, "main": "./lib/webinos.attestation.js"
+, "main": "./lib/tssmain.js"
 , "dependencies":
   { "schema": "0.2.0"
   , "dcrypt":
@@ -24,7 +24,6 @@
 , "bundleDependencies":
   [ "fs"
   , "path"
-  , "x509"
   , "tssbridge"
   ]
 }

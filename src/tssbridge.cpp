@@ -57,11 +57,20 @@
 #include <v8.h>
 #include <node.h>
 #include <iostream>
+#include "v8-convert.hpp"
+
+#include "convert.hpp" 
+#include "invocable.hpp" 
+#include "properties.hpp"
+#include "arguments.hpp"
+#include "XTo.hpp" 
+ 
 
 extern "C" {
-#include "attestation.h"
+#include "tsscommands.h"
 }
 
+namespace cv = cvv8;
 using namespace node;
 using namespace v8;
 
@@ -69,21 +78,55 @@ using namespace v8;
  * Wrap the "pcrRead" function to marshal and unmarshall arguments.
  */
 static Handle<Value> getPCR(const Arguments& args) {
-	int pcr = args[0]->IntegerValue();
-	BYTE* pcrRes = (BYTE*) malloc(20 * sizeof(BYTE));
-	UINT32 pcrLen = pcrRead(pcr, pcrRes);
-	//printf("%d\n", pcrLen);
-	if (pcrLen < 0) {
-		return ThrowException(
-				Exception::Error(String::New("Could not read PCR")));
-	}
-	Local<Array> arr = Array::New(pcrLen);
-	for (int i = 0; i < pcrLen; i++) {
-		arr->Set(i, Number::New(pcrRes[i]));
-	}
-	free(pcrRes);
-	return arr;
+    if (args.Length() == 1 && args[0]->IsNumber()) {
+	    int pcr = cv::CastFromJS<int>(args[0]);
+	    BYTE* pcrRes = (BYTE*) calloc(20, sizeof(BYTE));
+
+	    UINT32 pcrLen = pcrRead(pcr, &pcrRes);
+	    
+	    
+	    
+	    if (pcrLen < 0) {
+		    return ThrowException(
+				    Exception::Error(String::New("Could not read PCR")));
+	    }
+
+	    v8::Handle<v8::Array> rv = v8::Array::New(pcrLen);	    
+	    for (int i = 0; i < pcrLen; i++) {
+		    rv->Set( i, cv::CastToJS<BYTE>( pcrRes[i]) );
+	    }
+	    printf("\n");
+	    
+	    free(pcrRes);
+	    return rv;
+    }
 }
+
+static Handle<Value> extendPCR(const Arguments& args) {
+    if (args.Length() == 2 && args[0]->IsNumber() ) {
+	    int pcr = cv::CastFromJS<int>(args[0]);
+        std::list<int> pcrData = cv::CastFromJS<std::list<int> >(args[1]);
+        
+        //convert our input bytes
+        UINT32 length = pcrData.size();
+        BYTE* input = (BYTE*) malloc(sizeof(BYTE) * length);
+        std::copy(pcrData.begin(), pcrData.end(), input); // copy the contents of the list to the output array
+        
+        TSS_RESULT res = pcrExtend(pcr, length, input);
+        
+        if (res == -1) {
+            return ThrowException(
+				    Exception::Error(String::New("Could not extend PCR")));
+        }
+        
+	    free(input);
+	    
+	    
+	    return v8::Boolean::New(true);
+    }
+}
+
+
 
 static Local<Object> versionToObject(TPM_STRUCT_VER ver) {
 	Local<Object> verObj = Object::New();
@@ -202,6 +245,7 @@ extern "C" {
 static void init(Handle<Object> target) {
 	NODE_SET_METHOD(target, "getPCR", getPCR);
 	NODE_SET_METHOD(target, "getQuote", getQuote);
+	NODE_SET_METHOD(target, "extendPCR", extendPCR);
 }
 NODE_MODULE(tssbridge, init)
 ;
