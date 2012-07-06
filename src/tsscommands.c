@@ -1,5 +1,5 @@
 /*******************************************************************************
-*  Code contributed to the webinos project
+*  Code originally contributed to the webinos project
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 *
 * Copyright 2011 University of Oxford
 *******************************************************************************/
+
 
 /*
  * tsscommands.c
@@ -41,13 +42,6 @@ char* getErrorCode(TSS_RESULT result) {
 	}
 }
 
-TSS_RESULT getTpm(TSS_HCONTEXT context, TSS_HTPM * tpm) {
-	return Tspi_Context_GetTpmObject(context, tpm);
-}
-
-TSS_RESULT createContext(TSS_HCONTEXT * context) {
-	return Tspi_Context_Create(context);
-}
 
 TSS_RESULT closeContext(TSS_HCONTEXT context) {
 	TSS_RESULT result = Tspi_Context_FreeMemory(context, NULL);
@@ -66,31 +60,6 @@ TSS_RESULT loadKeyByUUID(TSS_HCONTEXT context, TSS_UUID id, TSS_HKEY * key) {
 	return Tspi_Context_LoadKeyByUUID(context, storeType, id, key);
 }
 
-TSS_RESULT getPcrs(TSS_HTPM tpm, UINT32 pcrNumber, UINT32 *pcrSize,
-		BYTE **pcrValue) {
-	TSS_RESULT result = Tspi_TPM_PcrRead(tpm, pcrNumber, pcrSize, pcrValue);
-
-/*	
-	printf("Result( %u ): ", (char) *pcrSize);
-	int i = 0;
-	for(i=0;i<20;i++) {
-	    BYTE v = *(*pcrValue+i);
-	    
-    	printf("%x,", v);
-	}
-	printf("\n");
-*/	
-	return result;
-}
-
-TSS_RESULT createTSSObject(TSS_HCONTEXT context, TSS_FLAG objectType,
-		TSS_FLAG attributes, TSS_HOBJECT * obj) {
-	return Tspi_Context_CreateObject(context, objectType, attributes, obj);
-}
-
-TSS_RESULT createTpmKey(TSS_HKEY key, TSS_HKEY wrapKey, TSS_HPCRS pcrs) {
-	return Tspi_Key_CreateKey(key, wrapKey, pcrs);
-}
 
 TSS_RESULT getSrk(TSS_HCONTEXT context, UINT32 secretMode, char* secret,
 		UINT32 secretLen, TSS_HKEY* key) {
@@ -114,13 +83,13 @@ TSS_RESULT pcrExtend(UINT32 pcrNumber, UINT32 pcrDataLength, BYTE* data)
 	UINT32 pcrResLength;
 	BYTE* pcrRes;
 
-	result = createContext(&context);
+	result = Tspi_Context_Create(&context);
 	if (result != 0)
 		return -1;
 	result = connectContext(context);
 	if (result != 0)
 		return -1;
-	result = getTpm(context, &tpm);
+	result = Tspi_Context_GetTpmObject(context, &tpm);
 	if (result != 0)
 		return -1;
 		
@@ -183,15 +152,22 @@ TSS_FLAG getSigningKeyFlags()
     return keyFlags;
 }
 
+TSS_FLAG getStorageKeyFlags()
+{
+    /* With thanks to the TPM Tools examples!*/
+    TSS_FLAG keyFlags = TSS_KEY_TYPE_STORAGE | TSS_KEY_SIZE_2048 | TSS_KEY_VOLATILE | TSS_KEY_AUTHORIZATION |
+	    TSS_KEY_NOT_MIGRATABLE;
+    return keyFlags;
+}
 
 TSS_RESULT createTpmKey2(TSS_HCONTEXT context, TSS_FLAG keyFlags, TSS_HKEY srk,
 		TSS_HKEY * key) {
 	TSS_RESULT result;
 	TSS_HPOLICY keyPolicy;
-	result = createTSSObject(context, TSS_OBJECT_TYPE_RSAKEY, keyFlags, key);
+	result = Tspi_Context_CreateObject(context, TSS_OBJECT_TYPE_RSAKEY, keyFlags, key);
 	if (result != 0)
 		return result;
-	result = createTSSObject(context, TSS_OBJECT_TYPE_POLICY, TSS_POLICY_USAGE,
+	result = Tspi_Context_CreateObject(context, TSS_OBJECT_TYPE_POLICY, TSS_POLICY_USAGE,
 			&keyPolicy);
 	if (result != 0)
 		return result;
@@ -201,8 +177,14 @@ TSS_RESULT createTpmKey2(TSS_HCONTEXT context, TSS_FLAG keyFlags, TSS_HKEY srk,
 	result = Tspi_Policy_AssignToObject(keyPolicy, *key);
 	if (result != 0)
 		return result;
-	result = createTpmKey(*key, srk, NULL_HPCRS);
+	result = Tspi_Key_CreateKey(*key, srk, NULL_HPCRS);
 	return result;
+}
+
+
+TSS_RESULT createKey(TSS_HKEY * key) 
+{
+    
 }
 
 
@@ -216,16 +198,16 @@ UINT32 pcrRead(int pcrNumber, BYTE** pcrRes) {
 	TSS_HTPM tpm;
 	UINT32 pcrResLength;
 
-	result = createContext(&context);
+	result = Tspi_Context_Create(&context);
 	if (result != 0)
 		return -1;
 	result = connectContext(context);
 	if (result != 0)
 		return -1;
-	result = getTpm(context, &tpm);
+	result = Tspi_Context_GetTpmObject(context, &tpm);
 	if (result != 0)
 		return -1;
-	result = getPcrs(tpm, pcrNumber, &pcrResLength, pcrRes);
+	result = Tspi_TPM_PcrRead(tpm, pcrNumber, &pcrResLength, pcrRes);
 	if (result != 0) {
 		printf("Could not read PCR %d\n", pcrNumber);
 		return -1;
@@ -254,13 +236,13 @@ TSS_RESULT quote(char* srkPwd, char* aikfile, long pcrs[], int npcrs,
 	UINT32 pcrResLength;
 	BYTE* pcrRes;
 
-	result = createContext(&context);
+	result = Tspi_Context_Create(&context);
 	if (result != 0)
 		return result;
 	result = connectContext(context);
 	if (result != 0)
 		return result;
-	result = getTpm(context, &tpm);
+	result = getTpmTspi_Context_GetTpmObject(context, &tpm);
 	if (result != 0)
 		return result;
 	result = getSrk(context, TSS_SECRET_MODE_PLAIN, srkPwd, strlen(srkPwd),

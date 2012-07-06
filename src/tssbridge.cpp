@@ -1,5 +1,5 @@
 /*******************************************************************************
-*  Code contributed to the webinos project
+*  Code originally contributed to the webinos project
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 /*
  *  tssbridge.cpp
  *
- *  Created on: 25 Oct 2011
  *  Author: John Lyle
  *
  *  This is a node.js module capable of communicating with attestation.c
@@ -28,29 +27,6 @@
  *
  *  Requirements are listed in attestation.c, but essentially the TrouSerS
  *  library, a TPM and OpenSSL.
- *
- *  Two methods are exposed to node.js:
- *
- *   - getPCR( index )
- *
- *   This method returns the content of a PCR register.
- *
- *   Argument : an integer referencing the PCR index.
- *   Returns  : an array of bytes containing the value of that PCR register
- *
- *   - getQuote( pwd, filename, [index], nonce )
- *
- *   This method returns the result of performing a TPM_Quote operation.
- *
- *   Arguments: (1) The Storage Root Key password
- *   			(2) The AIK blob file generated using privacyca.com code
- *   			(3) An array of PCR indexes to include in the quote
- *   			(4) A byte array of length 20 containing a nonce
- *
- *   Returns  : A structure consisting of two objects,
- *   			(1) validationData
- *   			(2) quoteInfo
- *   			These conform to the TSS specification's return values.
  *
  */
 
@@ -82,21 +58,16 @@ static Handle<Value> getPCR(const Arguments& args) {
 	    int pcr = cv::CastFromJS<int>(args[0]);
 	    BYTE* pcrRes = (BYTE*) calloc(20, sizeof(BYTE));
 
-	    UINT32 pcrLen = pcrRead(pcr, &pcrRes);
-	    
-	    
+	    UINT32 pcrLen = pcrRead(pcr, &pcrRes);    
 	    
 	    if (pcrLen < 0) {
 		    return ThrowException(
 				    Exception::Error(String::New("Could not read PCR")));
 	    }
-
 	    v8::Handle<v8::Array> rv = v8::Array::New(pcrLen);	    
 	    for (int i = 0; i < pcrLen; i++) {
 		    rv->Set( i, cv::CastToJS<BYTE>( pcrRes[i]) );
-	    }
-	    printf("\n");
-	    
+	    }    
 	    free(pcrRes);
 	    return rv;
     }
@@ -107,10 +78,9 @@ static Handle<Value> extendPCR(const Arguments& args) {
 	    int pcr = cv::CastFromJS<int>(args[0]);
         std::list<int> pcrData = cv::CastFromJS<std::list<int> >(args[1]);
         
-        //convert our input bytes
         UINT32 length = pcrData.size();
         BYTE* input = (BYTE*) malloc(sizeof(BYTE) * length);
-        std::copy(pcrData.begin(), pcrData.end(), input); // copy the contents of the list to the output array
+        std::copy(pcrData.begin(), pcrData.end(), input); 
         
         TSS_RESULT res = pcrExtend(pcr, length, input);
         

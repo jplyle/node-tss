@@ -1,5 +1,5 @@
 /*******************************************************************************
-*  Code contributed to the webinos project
+*  Code originally contributed to the webinos project
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 *
 * Copyright 2011 University of Oxford
 *******************************************************************************/
+
 
 /*
  * tsscommands.h
@@ -43,14 +44,9 @@
 
 
 TSS_RESULT pcrExtend(UINT32 pcrNumber, UINT32 pcrDataLength, BYTE* data);
-TSS_RESULT getTpm(TSS_HCONTEXT context, TSS_HTPM * tpm);
-TSS_RESULT createContext(TSS_HCONTEXT * context);
 TSS_RESULT closeContext(TSS_HCONTEXT context);
 TSS_RESULT connectContext(TSS_HCONTEXT context);
 TSS_RESULT loadKeyByUUID(TSS_HCONTEXT context, TSS_UUID id, TSS_HKEY * key);
-TSS_RESULT getPcrs(TSS_HTPM tpm, UINT32 pcrNumber, UINT32 *pcrSize, BYTE **pcrValue);
-TSS_RESULT createTSSObject(TSS_HCONTEXT context, TSS_FLAG objectType, TSS_FLAG attributes, TSS_HOBJECT * obj);
-TSS_RESULT createTpmKey(TSS_HKEY key, TSS_HKEY wrapKey, TSS_HPCRS pcrs);
 TSS_RESULT getSrk(TSS_HCONTEXT context, UINT32 secretMode, char* secret, UINT32 secretLen, TSS_HKEY* key);
 TSS_RESULT getKeyFromFile(TSS_HCONTEXT context, TSS_HKEY srk, char* filename, TSS_HKEY* key);
 TSS_RESULT createTpmKey2(TSS_HCONTEXT context, TSS_FLAG keyFlags, TSS_HKEY srk, TSS_HKEY * key );

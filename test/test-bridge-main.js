@@ -1,5 +1,5 @@
 /*******************************************************************************
-*  Code contributed to the webinos project
+*  Code originally contributed to the webinos project
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -22,12 +22,9 @@ var util = require('util'),
     assert = require('assert');
 
 
-// TODO: use jasmine or vows.
+/* Test whether we can get PCR values */
 
-
-// getPCR
 var pcr = [];
-
 for (var i=0; i<8; i++) {
     console.log("Reading pcr " + i + "...");
     pcr[i] = tssbridge.getPCR(i);
@@ -38,6 +35,10 @@ for (var i=0; i<8; i++) {
     
 }
 console.log("Done");
+
+
+
+/* Test whether we can extend PCRs and whether that changes the PCR value */
 
 tssbridge.extendPCR(7, [0x00,0x01,0x02,0x03,0x04,
                         0x10,0x11,0x12,0x13,0x14,
