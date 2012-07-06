@@ -1,5 +1,5 @@
 ================================================================================
-                                  NODE-TSS
+NODE-TSS
 ================================================================================
 
 NodeJS module for accessing the TCG Software Stack and therefore the Trusted 
@@ -14,26 +14,24 @@ This was originally part of the webinos project (http://webinos.org/) but was
 extracted and turned into a separate project.
 
 
-
-================================================================================
 Requirements
-================================================================================
+-------------
 
-(1) A TPM or TPM Emulator
-(2) A valid TSS stack.  I've tested it against the TrouSerS stack.
-(3) The cvv8 V8 type conversion headers, as provided in the "includes" 
-    directory.  More details - http://code.google.com/p/v8-juice/wiki/V8Convert
+1. A TPM or TPM Emulator
+2. A valid TSS stack.  I've tested it against the TrouSerS stack.
+3. The cvv8 V8 type conversion headers, as provided in the "includes" 
+   directory.  More details - http://code.google.com/p/v8-juice/wiki/V8Convert
 
 
-
-================================================================================
 Compilation
-================================================================================
+-------------
 
 Using node-waf.  Two steps:
 
-1) node-waf configure
-2) node-waf
+<pre>
+$ node-waf configure
+$ node-waf
+</prE>
 
 You will get the following warning: 
 
@@ -41,29 +39,27 @@ You will get the following warning:
 ../src/tsscommands.c:38:18: warning: cast to pointer from integer of different size
 
 
-
-================================================================================
 Testing
-================================================================================
+-------------
 
 There's one test - run the following from the root directory of the module
 
+<pre>
 node ./test/test-bridge-main.js
+</pre>
 
-It should 
 
-================================================================================
 TPM Keys
-================================================================================
+-------------
 This API doesn't create keys for you, it needs you to do it.
 
 Go to http://privacyca.com/code.html and follow instructions for the 
 Privacy CA client and (if possible) the EK Certificate Extractor.
 
 
-================================================================================
+
 TODO List / known bugs
-================================================================================
+-------------
 
 At the moment all operations are synchronous.  This might need to change.
 
@@ -72,10 +68,11 @@ That might be this module, or it might be trousers
 
 
 
-================================================================================
-License
-================================================================================
 
+License
+-------------
+
+<pre>
 /*******************************************************************************
 *  Code originally contributed to the webinos project
 *
@@ -93,4 +90,4 @@ License
 *
 * Copyright 2011 University of Oxford
 *******************************************************************************/
-
+</pre>
