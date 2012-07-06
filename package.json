@@ -1,4 +1,4 @@
-{ "name": "attestation"
+{ "name": "node-tss"
 , "publishConfig": { "tag": "alpha" }
 , "description": "nodejs interface to the Trusted Computing Group Software Stack (TSS)"
 , "keywords": ["trusted computing", "TPM", "TSS", "attestation"]
