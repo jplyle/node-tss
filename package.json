@@ -11,19 +11,13 @@
   }
 , "bugs":
   { "email": "john.lyle@cs.ox.ac.uk"
-  , "url": ""
+  , "url": "https://github.com/jplyle/node-tss"
   }
 , "directories": { "lib": "./lib"
                  , "node_modules": "./node_modules"
                  }
 , "main": "./lib/tssmain.js"
-, "dependencies":
-  { "schema": "0.2.0"
-  , "dcrypt":
-  }
+, "dependencies": { }
 , "bundleDependencies":
-  [ "fs"
-  , "path"
-  , "tssbridge"
-  ]
+  [ "tssbridge" ]
 }
